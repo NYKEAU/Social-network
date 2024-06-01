@@ -15,6 +15,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RegistrationController extends AbstractController
 {
@@ -22,12 +24,14 @@ class RegistrationController extends AbstractController
     {
     }
 
-    #[Route('/register', name: 'app_register')]
+    #[Route('/register', name: 'app_register', methods: ['POST'])]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
+        $data = json_decode($request->getContent(), true);
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
-        $form->handleRequest($request);
+        $form->submit($data);
 
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
@@ -38,8 +42,6 @@ class RegistrationController extends AbstractController
                 )
             );
 
-            $user->setUsername($form->get('username')->getData());
-            
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -52,14 +54,10 @@ class RegistrationController extends AbstractController
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
 
-            // do anything else you need here, like send an email
-
-            return $this->redirectToRoute('_profiler_search');
+            return new JsonResponse(['status' => 'User created'], Response::HTTP_CREATED);
         }
 
-        return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form,
-        ]);
+        return new JsonResponse(['errors' => (string) $form->getErrors(true)], Response::HTTP_BAD_REQUEST);
     }
 
     #[Route('/verify/email', name: 'app_verify_email')]
