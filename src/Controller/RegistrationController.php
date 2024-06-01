@@ -16,7 +16,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RegistrationController extends AbstractController
 {

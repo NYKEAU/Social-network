@@ -6,21 +6,41 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class SecurityController extends AbstractController
 {
     #[Route(path: '/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(Request $request, AuthenticationUtils $authenticationUtils): JsonResponse
     {
-        // get the login error if there is one
+        $data = json_decode($request->getContent(), true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return new JsonResponse(['error' => 'Invalid JSON data'], Response::HTTP_BAD_REQUEST);
+        }
+        
+        $email = $data['_email'] ?? '';
+        $password = $data['_password'] ?? '';
+
+        if (empty($email) || empty($password)) {
+            return new JsonResponse(['error' => 'Username, email, and password are required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Logique d'authentification ici
         $error = $authenticationUtils->getLastAuthenticationError();
 
-        // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
+        if ($error) {
+            return new JsonResponse(['error' => $error->getMessage()], Response::HTTP_UNAUTHORIZED);
+        }
 
-        return $this->render('security/login.html.twig', [
-            'last_username' => $lastUsername,
-            'error' => $error,
+        $user = $this->getUser(); // Récupérer l'utilisateur actuellement authentifié
+        $username = $user ? $user->getUsername() : ''; // Récupérer le nom d'utilisateur de l'utilisateur
+    
+        // Créer une réponse JSON avec le nom d'utilisateur inclus
+        return new JsonResponse([
+            'message' => 'User logged in successfully',
+            'last_username' => $username,
         ]);
     }
 
