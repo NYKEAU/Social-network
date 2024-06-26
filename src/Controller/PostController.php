@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class PostController extends AbstractController
 {
-    #[Route('/posts', name: 'create_post', methods: ['POST'])] // Utiliser uniquement POST pour la création
+    #[Route('/posts', name: 'create_post', methods: ['GET'])] // Utiliser uniquement POST pour la création
     public function createPost(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
