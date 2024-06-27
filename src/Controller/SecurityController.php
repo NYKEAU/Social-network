@@ -36,11 +36,14 @@ class SecurityController extends AbstractController
 
         $user = $this->getUser(); // Récupérer l'utilisateur actuellement authentifié
         $username = $user ? $user->getUsername() : ''; // Récupérer le nom d'utilisateur de l'utilisateur
+        //Get user id 
+        $userId = $user ? $user->getId() : ''; // Récupérer l'ID de l'utilisateur
     
         // Créer une réponse JSON avec le nom d'utilisateur inclus
         return new JsonResponse([
             'message' => 'User logged in successfully',
             'last_username' => $username,
+            'user_id' => $userId,
         ]);
     }
 

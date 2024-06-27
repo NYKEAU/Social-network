@@ -17,11 +17,10 @@ class PostFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('author', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
+            ->add('user_id', TextType::class)
+            ->add('content', TextType::class, [
+                'required' => true,
             ])
-            ->add('content', TextType::class)
             ->add('img_link', TextType::class, [
                 'required' => false,
             ])
