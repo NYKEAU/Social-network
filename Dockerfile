@@ -55,4 +55,4 @@ RUN php bin/console cache:clear --env=prod --no-debug || true
 EXPOSE $PORT
 
 # Start the application
-CMD ["sh", "-c", "php -S 0.0.0.0:$PORT -t public"] 
+CMD sh -c 'php -S 0.0.0.0:${PORT:-8000} -t public'
