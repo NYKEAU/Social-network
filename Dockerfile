@@ -34,6 +34,7 @@ RUN echo "# Temporary .env for build process - values overridden by platform env
     echo "MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0" >> .env
 
 # Install dependencies - ignore platform requirements to avoid version conflicts
+RUN echo "Force rebuild $(date)"
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --ignore-platform-reqs --no-scripts
 
 # Copy the rest of the application
